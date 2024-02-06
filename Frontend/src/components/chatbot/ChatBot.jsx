@@ -1,35 +1,57 @@
 import React, { useState, useRef, useEffect } from 'react';
-import axios from 'axios';  
+import axios from 'axios';
 
 const ChatBot = () => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [isChatExpanded, setIsChatExpanded] = useState(false);
   const messagesContainerRef = useRef();
-  const apiKey = 'TU_CLAVE_DE_API'; 
+  const apiKey = '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';
+
+  const getCompletion = async (prompt) => {
+    try {
+      const response = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + apiKey
+        },
+        body: JSON.stringify({
+          model: 'gpt-3.5-turbo',
+          messages: [
+            {
+              role: 'system',
+              content: 'You are a helpful assistant.'
+            },
+            {
+              role: 'user',
+              content: prompt
+            }
+          ]
+        })
+      });
+
+      const data = await response.json();
+
+      console.log(data);
+
+      return data.choices[0].text;
+    } catch (error) {
+      console.error('Error:', error.message);
+      return '';
+    }
+  };
 
   const handleSendMessage = async () => {
     if (input.trim() !== '') {
       const userMessage = { text: input, sender: 'user' };
-      setMessages([...messages, userMessage]);
+      setMessages((prevMessages) => [...prevMessages, userMessage]);
 
       try {
-        const response = await axios.post(
-          'https://api.openai.com/v1/engines/davinci-codex/completions',
-          {
-            prompt: input,
-            max_tokens: 50 
-          },
-          {
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${apiKey}`
-            }
-          }
-        );
+        const response = await getCompletion(input);
 
-        const chatbotMessage = { text: response.data.choices[0].text, sender: 'chatbot' };
-        setMessages([...messages, chatbotMessage]);
+        const chatbotMessage = { text: response, sender: 'chatbot' };
+        setMessages((prevMessages) => [...prevMessages, chatbotMessage]);
       } catch (error) {
         console.error('Error:', error.message);
       }
