@@ -1,4 +1,4 @@
-const apiKey = import.meta.env.VITE_OPENAI_API_KEY;
+const apiKey = import.meta.env.VITE_OPENAI_API_KEY; //carehere
 
 async function getCompletion(prompt) {
   try {

@@ -6,7 +6,7 @@ const ChatBot = () => {
   const [input, setInput] = useState('');
   const [isChatExpanded, setIsChatExpanded] = useState(false);
   const messagesContainerRef = useRef();
-  const apiKey = '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';
+  const apiKey = import.meta.env.VITE_OPENAI_API_KEY; //mustbedeleted
 
   const getCompletion = async (prompt) => {
     try {
